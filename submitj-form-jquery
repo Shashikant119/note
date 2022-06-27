@@ -1,0 +1,62 @@
+<script type="text/javascript">
+	$(function(){
+    $(document).on('click', "#save_btn", function(event){
+        event.preventDefault();
+
+        var formEle = $('#create_form');
+
+        if(formEle.find("#name").val() == ''){
+            $('.name').css("border", "1px solid red");
+            return false;
+        }
+        $('.name').css("border", "1px solid #fff");
+
+        if(formEle.find("#email").val() == ''){
+            $('.email').css("border", "1px solid red");
+            return false;
+        }
+        $('.email').css("border", "1px solid #fff");
+
+        if(formEle.find("#mobile_no").val() == ''){
+            $('.mobile_no').css("border", "1px solid red");
+            return false;
+        }
+        $('.mobile_no').css("border", "1px solid #fff");
+
+        var thisButton = $(this);
+        if ( thisButton.data('requestRunning') ) {
+            return;
+        }
+        thisButton.data('requestRunning', true);
+        thisButton.prop("disabled", true);
+
+        $("#save_resource-error").text('');
+
+        var url = formEle.attr('action');
+        var formData = formEle.serialize();
+
+        $.ajax({
+          type: 'POST',
+          dataType: 'JSON',
+          data: formData,
+          url: url,
+        }).done(function(data){
+          if(data.status == 'success'){
+            $("#save_resource-error").removeClass('hide').text(data.message).css({"color":"green"});
+            setTimeout(function() {
+              $("#exampleModalCenter .close").click();
+              $("#email, #name, #mobile_no").val("");
+              $("#save_resource-error").empty();
+            }, 3000);
+          }else{
+            $("#save_resource-error").removeClass('hide').text(data.message).css({"color":"#FF5733"});
+          }
+        }).fail(function(jqXHR, ajaxOptions, thrownError){
+          $("#save_resource-error").removeClass('hide').text('Error Occured!!').css({"color":"#FF5733"});
+        }).always(function() {
+          thisButton.data('requestRunning', false);
+          thisButton.prop("disabled", false);
+        });
+    });
+});
+</script>
